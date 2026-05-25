@@ -1,7 +1,7 @@
 { ... }:
 
 let
-  repoArchive = "https://github.com/not-a-longneck/simple-nix-os/archive/refs/heads/main.tar.gz";
+  repoArchive = "https://github.com/not-a-longneck/simple-nixos-vm/archive/refs/heads/main.tar.gz";
   configDir = "/etc/nixos";
 in
 {
