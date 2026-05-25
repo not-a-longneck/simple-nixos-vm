@@ -1,3 +1,4 @@
+# /etc/nixos/configuration.nix
 { config, pkgs, ... }:
 
 {
@@ -86,7 +87,7 @@
   };
 
   # ==============================
-  # Apps and tools       
+  # APPS AND TOOLS
   # ==============================
 
   nixpkgs.config.allowUnfree = true;
@@ -107,7 +108,7 @@
     czkawka-full
     qdirstat
     kdePackages.filelight
-    kdePackages.kate      
+    kdePackages.kate
   ];
 
   # Set default MIME apps system-wide
@@ -137,16 +138,28 @@
   fileSystems."/mnt/tower/backups" = {
     device = "//192.168.1.53/backups";
     fsType = "cifs";
-    options = [ "guest,uid=1000,gid=100,rw,iocharset=utf8,file_mode=0777,dir_mode=0777,noperm,_netdev,x-systemd.automount,x-systemd.idle-timeout=60" ];
+    options = [
+      "guest"
+      "uid=1000"
+      "gid=100"
+      "rw"
+      "iocharset=utf8"
+      "file_mode=0777"
+      "dir_mode=0777"
+      "noperm"
+      "_netdev"
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=60"
+    ];
   };
 
   fileSystems."/mnt/shared" = {
     device = "share-home";
     fsType = "virtiofs";
-    options = [ 
+    options = [
       "nofail"
-      "x-systemd.automount" 
-      "x-systemd.idle-timeout=60" 
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=60"
     ];
   };
 
@@ -155,21 +168,50 @@
   '';
 
   # ================================
-  # ACTIVATION SCRIPT (Replaces Home Manager logic)
+  # FLATPAK SETUP SERVICE
   # ================================
-  
+
+  systemd.services.flatpak-setup = {
+    description = "Install and configure Flatpak apps";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" "flatpak-system-helper.service" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      if [ -f /var/lib/flatpak-setup-done ]; then exit 0; fi
+
+      ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      ${pkgs.flatpak}/bin/flatpak install -y flathub org.jdownloader.JDownloader
+      ${pkgs.flatpak}/bin/flatpak install -y flathub com.rustdesk.RustDesk
+      ${pkgs.flatpak}/bin/flatpak override org.jdownloader.JDownloader \
+        --filesystem=xdg-download:rw \
+        --filesystem=/tmp:rw \
+        --filesystem=/mnt:rw \
+        --filesystem=/mnt/veracrypt1/:rw \
+        --socket=x11 \
+        --socket=wayland \
+        --socket=fallback-x11 \
+        --share=network \
+        --share=ipc \
+        --talk-name=org.freedesktop.NetworkManager
+
+      touch /var/lib/flatpak-setup-done
+    '';
+  };
+
+  # ================================
+  # ACTIVATION SCRIPT
+  # ================================
+
   system.activationScripts.adminHomeSetup = {
     text = ''
-      # 1. Flatpak Apps & Overrides
-      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-      flatpak install -y flathub org.jdownloader.JDownloader || true
-      flatpak install -y flathub com.rustdesk.RustDesk || true
-      flatpak override org.jdownloader.JDownloader --filesystem=xdg-download:rw --filesystem=/tmp:rw --filesystem=/mnt:rw --filesystem=/mnt/veracrypt1/:rw --socket=x11 --socket=wayland --socket=fallback-x11 --share=network --share=ipc --talk-name=org.freedesktop.NetworkManager
-
-      # 2. Unraid Symlink
+      # 1. Unraid Symlink
       ln -sfn /mnt/tower/backups /home/admin/Unraid
 
-      # 3. Config Files (VLC, Tor, Plasma)
+      # 2. Config Files (VLC, Tor, Plasma)
       mkdir -p /home/admin/.config/vlc
       cat > /home/admin/.config/vlc/vlcrc << 'EOF'
 [core]
@@ -199,3 +241,36 @@ EOF
 [General]
 loginMode=emptySession
 EOF
+
+      cat > /home/admin/.config/dolphinrc << 'EOF'
+[NKCoreSettings]
+LocalFilesPreviews=false
+RemoteFilesPreviews=false
+EOF
+
+      # 3. Enforce Permissions
+      chown -R admin:users /home/admin/.config /home/admin/.tor-project /home/admin/Unraid
+      chown -R admin:users /etc/nixos
+      chmod -R 755 /etc/nixos
+    '';
+  };
+
+  # ===============================
+  # USER SETTINGS
+  # ===============================
+
+  time.timeZone = "Europe/Copenhagen";
+  i18n.defaultLocale = "en_DK.UTF-8";
+
+  console.keyMap = "dk";
+  services.xserver.xkb = {
+    layout = "dk";
+    variant = "";
+  };
+
+  environment.shellAliases = {
+    copypaste = "spice-vdagent";
+  };
+
+  system.stateVersion = "25.11";
+}
