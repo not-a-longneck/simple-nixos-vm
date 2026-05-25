@@ -1,6 +1,12 @@
 # /etc/nixos/configuration.nix
 { config, pkgs, ... }:
 
+let
+  isEfi = builtins.pathExists /sys/firmware/efi;
+  biosDevice = if builtins.pathExists /dev/vda then "/dev/vda"
+               else if builtins.pathExists /dev/sda then "/dev/sda"
+               else "/dev/nvme0n1";
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -14,18 +20,12 @@
 
   boot.loader.grub = {
     enable = true;
-    device = if (builtins.any (fs: fs.mountPoint == "/boot" && fs.fsType == "vfat") 
-      (builtins.attrValues config.fileSystems)) 
-    then "nodev" 
-      else "/dev/vda";
-    efiSupport = builtins.any (fs: fs.mountPoint == "/boot" && fs.fsType == "vfat") 
-      (builtins.attrValues config.fileSystems);
+    device = if isEfi then "nodev" else biosDevice;
+    efiSupport = isEfi;
     useOSProber = true;
   };
-  
-  boot.loader.efi.canTouchEfiVariables = 
-  builtins.any (fs: fs.mountPoint == "/boot" && fs.fsType == "vfat") 
-  (builtins.attrValues config.fileSystems);
+
+  boot.loader.efi.canTouchEfiVariables = isEfi;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
