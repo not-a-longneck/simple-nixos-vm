@@ -70,16 +70,6 @@
     description = "admin";
     extraGroups = [ "networkmanager" "wheel" "video" "render" "storage" "disk" ];
     hashedPassword = "$6$Osqk1/PTMVPFxz.R$xnhXNz5ePRgPQZtGMaXlSDInDsrwNocuRqVmTfZcq4ujAer6PiesG27vZpkxdMJh3gtSzP9qOlTs8CTP9Pf.f/";
-    packages = with pkgs; [
-      vlc
-      tor-browser
-      peazip
-      rustdesk
-      czkawka-full
-      qdirstat
-      kdePackages.filelight
-      kdePackages.kate      
-    ];
   };
 
   services.pipewire = {
@@ -96,19 +86,26 @@
     };
   };
 
-  # ==============================
+# ==============================
   # Apps and tools       
   # ==============================
 
-  programs.firefox.enable = true;
-  nixpkgs.config.allowUnfree = true;
-  services.flatpak.enable = true;
-
   environment.systemPackages = with pkgs; [
+    # System Utilities
     spice-vdagent
     cifs-utils
     veracrypt
     ntfs3g
+
+    # GUI Applications
+    vlc
+    tor-browser
+    peazip
+    rustdesk
+    czkawka-full
+    qdirstat
+    kdePackages.filelight
+    kdePackages.kate      
   ];
 
   # Set default MIME apps system-wide
