@@ -86,9 +86,13 @@
     };
   };
 
-# ==============================
+  # ==============================
   # Apps and tools       
   # ==============================
+
+  nixpkgs.config.allowUnfree = true;
+  services.flatpak.enable = true;
+  programs.firefox.enable = true;
 
   environment.systemPackages = with pkgs; [
     # System Utilities
