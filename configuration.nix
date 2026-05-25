@@ -1,4 +1,3 @@
-# /etc/nixos/configuration.nix
 { config, pkgs, ... }:
 
 {
@@ -105,7 +104,6 @@
     vlc
     tor-browser
     peazip
-    rustdesk
     czkawka-full
     qdirstat
     kdePackages.filelight
@@ -165,6 +163,7 @@
       # 1. Flatpak Apps & Overrides
       flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       flatpak install -y flathub org.jdownloader.JDownloader || true
+      flatpak install -y flathub com.rustdesk.RustDesk || true
       flatpak override org.jdownloader.JDownloader --filesystem=xdg-download:rw --filesystem=/tmp:rw --filesystem=/mnt:rw --filesystem=/mnt/veracrypt1/:rw --socket=x11 --socket=wayland --socket=fallback-x11 --share=network --share=ipc --talk-name=org.freedesktop.NetworkManager
 
       # 2. Unraid Symlink
@@ -200,36 +199,3 @@ EOF
 [General]
 loginMode=emptySession
 EOF
-
-      cat > /home/admin/.config/dolphinrc << 'EOF'
-[NKCoreSettings]
-LocalFilesPreviews=false
-RemoteFilesPreviews=false
-EOF
-
-      # 4. Enforce Permissions
-      chown -R admin:users /home/admin/.config /home/admin/.tor-project /home/admin/Unraid
-      chown -R admin:users /etc/nixos
-      chmod -R 755 /etc/nixos
-    '';
-  };
-
-  # ===============================
-  # User settings         
-  # ===============================
-
-  time.timeZone = "Europe/Copenhagen";
-  i18n.defaultLocale = "en_DK.UTF-8";
-
-  console.keyMap = "dk";
-  services.xserver.xkb = {
-    layout = "dk";
-    variant = "";
-  };
-
-  environment.shellAliases = {
-    copypaste = "spice-vdagent";
-  };
-
-  system.stateVersion = "25.11";
-}

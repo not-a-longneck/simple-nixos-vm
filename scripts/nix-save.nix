@@ -11,7 +11,7 @@ in
       curl -sL "${repoArchive}" | sudo tar -xz -C "${configDir}" --strip-components=1 --overwrite
       
       echo "❄️ Step 2: Rebuilding NixOS..."
-      if sudo nixos-rebuild switch; then
+      if sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --cores 1 -j 1; then
         gen_num=$(readlink /nix/var/nix/profiles/system | cut -d- -f2)
         echo "✨ Success! Updated to Generation $gen_num!"
       else
