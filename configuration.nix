@@ -109,7 +109,6 @@
     cifs-utils
     veracrypt
     ntfs3g
-    pyload-ng
   ];
 
   # Set default MIME apps system-wide
