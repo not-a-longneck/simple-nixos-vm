@@ -57,6 +57,11 @@ in
 
   systemd.coredump.enable = false;
 
+  zramSwap = {
+    enable = true;
+    memoryPercent = 25;
+  };
+
   # ==============================
   # DESKTOP ENVIRONMENT
   # ==============================
