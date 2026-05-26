@@ -68,19 +68,19 @@ in
 
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
+  xdg.portal.enable = true;
 
 
-  ### KDE
-  #services.displayManager.defaultSession = "plasmax11";
-  #services.desktopManager.plasma6.enable = true;
+  ### KDE (comment out to disable)
+  # services.displayManager.defaultSession = "plasmax11";
+  # services.desktopManager.plasma6.enable = true;
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-kde ];
 
-  ### XFCE
+  ### XFCE (comment out to disable)
   services.displayManager.defaultSession = "xfce";
   services.xserver.desktopManager.xfce.enable = true;
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
-  };
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
 
 
   users.users.admin = {
