@@ -67,14 +67,14 @@ in
   # ==============================
 
   services.xserver.enable = true;
+  services.displayManager.sddm.enable = true;
+
 
   ### KDE
-  #services.displayManager.sddm.enable = true;
   #services.displayManager.defaultSession = "plasmax11";
   #services.desktopManager.plasma6.enable = true;
 
   ### XFCE
-  services.displayManager.lightdm.enable = true;
   services.displayManager.defaultSession = "xfce";
   services.xserver.desktopManager.xfce.enable = true;
 
