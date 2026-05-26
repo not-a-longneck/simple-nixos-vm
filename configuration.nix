@@ -77,6 +77,10 @@ in
   ### XFCE
   services.displayManager.defaultSession = "xfce";
   services.xserver.desktopManager.xfce.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+  };
 
 
   users.users.admin = {
