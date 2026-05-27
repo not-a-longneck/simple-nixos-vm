@@ -70,18 +70,14 @@ in
   services.displayManager.sddm.enable = true;
   xdg.portal.enable = true;
 
-
   ### KDE (comment out to disable)
   services.displayManager.defaultSession = "plasmax11";
   services.desktopManager.plasma6.enable = true;
-
 
   ### XFCE (comment out to disable)
   # services.displayManager.defaultSession = "xfce";
   # services.xserver.desktopManager.xfce.enable = true;
   # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-
-
 
   users.users.admin = {
     isNormalUser = true;
@@ -192,22 +188,24 @@ in
 
   # Prevent the laptop from sleeping when the lid is closed
   services.logind.lidSwitch = "ignore";
- 
-  systemd.user.services.rustdesk = {
+
+  systemd.services.rustdesk = {
     description = "RustDesk remote desktop";
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
     serviceConfig = {
+      Type = "simple";
+      User = "admin";
       ExecStart = "${pkgs.rustdesk-flutter}/bin/rustdesk --service";
       Restart = "on-failure";
+      RestartSec = 5;
     };
   };
- 
+
   networking.firewall = {
     allowedTCPPorts = [ 21115 21116 21117 21118 21119 ];
     allowedUDPPorts = [ 21116 ];
   };
- 
 
   # ================================
   # FLATPAK SETUP SERVICE
@@ -227,7 +225,6 @@ in
 
       ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       ${pkgs.flatpak}/bin/flatpak install -y flathub org.jdownloader.JDownloader
-      #${pkgs.flatpak}/bin/flatpak install -y flathub com.rustdesk.RustDesk
       ${pkgs.flatpak}/bin/flatpak override org.jdownloader.JDownloader \
         --filesystem=xdg-download:rw \
         --filesystem=/tmp:rw \
@@ -244,16 +241,15 @@ in
     '';
   };
 
-  
   # ================================
   # ACTIVATION SCRIPT
   # ================================
- 
+
   system.activationScripts.adminHomeSetup = {
     text = ''
       # 1. Unraid Symlink
       ln -sfn /mnt/tower/backups /home/admin/Unraid
- 
+
       # 2. Config Files (VLC, Tor, Plasma)
       mkdir -p /home/admin/.config/vlc
       cat > /home/admin/.config/vlc/vlcrc << 'EOF'
@@ -269,7 +265,7 @@ qt-privacy-ask=0
 qt-notification=0
 qt-video-autoresize=0
 EOF
- 
+
       mkdir -p "/home/admin/.tor-project/TorBrowser/Data/Browser/profile.default"
       cat > "/home/admin/.tor-project/TorBrowser/Data/Browser/profile.default/user.js" << 'EOF'
 user_pref("javascript.enabled", false);
@@ -279,35 +275,36 @@ user_pref("intl.accept_languages", "en-US, en");
 user_pref("intl.locale.requested", "en-US");
 user_pref("browser.toolbars.bookmarks.visibility", "never");
 EOF
- 
+
       cat > /home/admin/.config/ksmserverrc << 'EOF'
 [General]
 loginMode=emptySession
 EOF
- 
+
       cat > /home/admin/.config/dolphinrc << 'EOF'
 [NKCoreSettings]
 LocalFilesPreviews=false
 RemoteFilesPreviews=false
 EOF
- 
- 
+
       # 3. RustDesk Config
       mkdir -p /home/admin/.config/rustdesk
       cat > /home/admin/.config/rustdesk/RustDesk2.toml << 'EOF'
 [options]
 direct-server = "Y"
 software-codec-only = "N"
+allow-remote-config-modification = "Y"
+verification-method = "use-permanent-password"
+permanent-password = "changeme123"
 EOF
       chmod 600 /home/admin/.config/rustdesk/RustDesk2.toml
- 
+
       # 4. Enforce Permissions
       chown -R admin:users /home/admin/.config /home/admin/.tor-project /home/admin/Unraid
       chown -R admin:users /etc/nixos
       chmod -R 755 /etc/nixos
     '';
   };
-
 
   # ===============================
   # USER SETTINGS
