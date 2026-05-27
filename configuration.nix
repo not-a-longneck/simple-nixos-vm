@@ -127,6 +127,7 @@ in
     qdirstat
     kdePackages.filelight
     kdePackages.kate
+    rustdesk-flutter
   ];
 
   # Set default MIME apps system-wide
