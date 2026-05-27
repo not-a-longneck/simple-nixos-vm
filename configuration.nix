@@ -244,15 +244,16 @@ in
     '';
   };
 
+  
   # ================================
   # ACTIVATION SCRIPT
   # ================================
-
+ 
   system.activationScripts.adminHomeSetup = {
     text = ''
       # 1. Unraid Symlink
       ln -sfn /mnt/tower/backups /home/admin/Unraid
-
+ 
       # 2. Config Files (VLC, Tor, Plasma)
       mkdir -p /home/admin/.config/vlc
       cat > /home/admin/.config/vlc/vlcrc << 'EOF'
@@ -268,7 +269,7 @@ qt-privacy-ask=0
 qt-notification=0
 qt-video-autoresize=0
 EOF
-
+ 
       mkdir -p "/home/admin/.tor-project/TorBrowser/Data/Browser/profile.default"
       cat > "/home/admin/.tor-project/TorBrowser/Data/Browser/profile.default/user.js" << 'EOF'
 user_pref("javascript.enabled", false);
@@ -278,24 +279,35 @@ user_pref("intl.accept_languages", "en-US, en");
 user_pref("intl.locale.requested", "en-US");
 user_pref("browser.toolbars.bookmarks.visibility", "never");
 EOF
-
+ 
       cat > /home/admin/.config/ksmserverrc << 'EOF'
 [General]
 loginMode=emptySession
 EOF
-
+ 
       cat > /home/admin/.config/dolphinrc << 'EOF'
 [NKCoreSettings]
 LocalFilesPreviews=false
 RemoteFilesPreviews=false
 EOF
-
-      # 3. Enforce Permissions
+ 
+ 
+      # 3. RustDesk Config
+      mkdir -p /home/admin/.config/rustdesk
+      cat > /home/admin/.config/rustdesk/RustDesk2.toml << 'EOF'
+[options]
+direct-server = "Y"
+software-codec-only = "N"
+EOF
+      chmod 600 /home/admin/.config/rustdesk/RustDesk2.toml
+ 
+      # 4. Enforce Permissions
       chown -R admin:users /home/admin/.config /home/admin/.tor-project /home/admin/Unraid
       chown -R admin:users /etc/nixos
       chmod -R 755 /etc/nixos
     '';
   };
+
 
   # ===============================
   # USER SETTINGS
