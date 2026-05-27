@@ -74,7 +74,7 @@ in
   ### KDE (comment out to disable)
   services.displayManager.defaultSession = "plasmax11";
   services.desktopManager.plasma6.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+
 
   ### XFCE (comment out to disable)
   # services.displayManager.defaultSession = "xfce";
