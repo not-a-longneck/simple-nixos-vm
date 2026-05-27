@@ -68,6 +68,7 @@ in
 
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = false;
   xdg.portal.enable = true;
 
   ### KDE (comment out to disable)
