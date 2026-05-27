@@ -189,6 +189,9 @@ in
   # ================================
   # RUSTDESK
   # ================================
+
+  # Prevent the laptop from sleeping when the lid is closed
+  services.logind.lidSwitch = "ignore";
  
   systemd.user.services.rustdesk = {
     description = "RustDesk remote desktop";
