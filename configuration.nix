@@ -204,7 +204,7 @@ in
 
       ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       ${pkgs.flatpak}/bin/flatpak install -y flathub org.jdownloader.JDownloader
-      ${pkgs.flatpak}/bin/flatpak install -y flathub com.rustdesk.RustDesk
+      #${pkgs.flatpak}/bin/flatpak install -y flathub com.rustdesk.RustDesk
       ${pkgs.flatpak}/bin/flatpak override org.jdownloader.JDownloader \
         --filesystem=xdg-download:rw \
         --filesystem=/tmp:rw \
