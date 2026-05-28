@@ -93,10 +93,9 @@ in
     pulse.enable = true;
     extraConfig.pipewire."92-low-latency" = {
       "context.properties" = {
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 512;
-        "default.clock.max-quantum" = 2048;
+      "default.clock.quantum" = 512;
+      "default.clock.min-quantum" = 256;
+      "default.clock.max-quantum" = 1024;
       };
     };
   };
