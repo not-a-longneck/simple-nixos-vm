@@ -195,7 +195,6 @@ in
     after = [ "network.target" ];
     serviceConfig = {
       Type = "simple";
-      User = "admin";
       ExecStart = "${pkgs.rustdesk-flutter}/bin/rustdesk --service";
       Restart = "on-failure";
       RestartSec = 5;
