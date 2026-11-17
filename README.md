@@ -2,4 +2,4 @@
 
 `sudo nixos-generate-config`
 
-`curl -L https://nix.*****.com | bash`
+`curl -L https://github.com/not-a-longneck/simple-nixos-vm | bash`
