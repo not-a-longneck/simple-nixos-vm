@@ -123,7 +123,6 @@ in
     qdirstat
     kdePackages.filelight
     kdePackages.kate
-    rustdesk-flutter
   ];
 
   # Set default MIME apps system-wide
@@ -182,29 +181,6 @@ in
     KERNEL=="dm-*", ENV{ID_FS_USAGE}=="filesystem", OWNER="admin", GROUP="users", MODE="0775"
   '';
 
-  # ================================
-  # RUSTDESK
-  # ================================
-
-  # Prevent the laptop from sleeping when the lid is closed
-  services.logind.lidSwitch = "ignore";
-
-  systemd.services.rustdesk = {
-    description = "RustDesk remote desktop";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.rustdesk-flutter}/bin/rustdesk --service";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-  };
-
-  networking.firewall = {
-    allowedTCPPorts = [ 21115 21116 21117 21118 21119 ];
-    allowedUDPPorts = [ 21116 ];
-  };
 
   # ================================
   # FLATPAK SETUP SERVICE
@@ -239,6 +215,7 @@ in
       touch /var/lib/flatpak-setup-done
     '';
   };
+
 
   # ================================
   # ACTIVATION SCRIPT
@@ -286,19 +263,8 @@ LocalFilesPreviews=false
 RemoteFilesPreviews=false
 EOF
 
-      # 3. RustDesk Config
-      mkdir -p /home/admin/.config/rustdesk
-      cat > /home/admin/.config/rustdesk/RustDesk2.toml << 'EOF'
-[options]
-direct-server = "Y"
-software-codec-only = "N"
-allow-remote-config-modification = "Y"
-verification-method = "use-permanent-password"
-permanent-password = "changeme123"
-EOF
-      chmod 600 /home/admin/.config/rustdesk/RustDesk2.toml
 
-      # 4. Enforce Permissions
+      # 3. Enforce Permissions
       chown -R admin:users /home/admin/.config /home/admin/.tor-project /home/admin/Unraid
       chown -R admin:users /etc/nixos
       chmod -R 755 /etc/nixos
